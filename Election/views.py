@@ -2,8 +2,10 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from .models import UserType
-from .serializers import UserTypeSerializer
+from .serializers import UserTypeSerializer , TestUserSerializer
 
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 # Create your views here.
 
@@ -24,3 +26,25 @@ def usertype_list(request, id=None):
 
     except Exception as e:
         return JsonResponse(e)
+
+
+
+
+
+
+
+
+@api_view(['GET'])
+def testView(request):
+    person = {
+        'name':'Rakibul Hasan',
+        'APItype':'minimal'
+    }
+    return Response(person);
+
+
+@api_view(['GET'])
+def userList(request):
+    userData = UserType.objects.all()
+    serializer = UserTypeSerializer(userData, many=True)
+    return Response(serializer.data);
