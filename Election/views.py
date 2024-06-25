@@ -1,3 +1,4 @@
+
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
@@ -48,3 +49,4 @@ def userList(request):
     userData = UserType.objects.all()
     serializer = UserTypeSerializer(userData, many=True)
     return Response(serializer.data);
+
