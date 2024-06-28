@@ -25,18 +25,16 @@ def usertype_list(request):
                     serializer.save()
                     return JsonResponse("User Type Added Successfully", safe=False)
         else:
+            usertype = UserType.objects.get(pk=pk)
             if request.method == 'GET':
-                usertype = UserType.objects.get(pk=pk)
                 serializer = UserTypeSerializer(usertype, many=False)
                 return JsonResponse(serializer.data, safe=False)
             elif request.method == 'PUT':
-                usertype = UserType.objects.get(pk=pk)
                 serializer = UserTypeSerializer(usertype, data=request.data)
                 if serializer.is_valid():
                     serializer.save()
                     return JsonResponse("User Type Updated Successfully", safe=False)
             elif request.method == 'DELETE':
-                usertype = UserType.objects.get(pk=pk)
                 usertype.delete()
                 return JsonResponse("User Type Deleted Successfully", safe=False)
 
