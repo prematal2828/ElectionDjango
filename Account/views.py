@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
@@ -7,6 +7,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from Account.serializers import *
 
@@ -39,11 +40,32 @@ def user_login(request):
         return Response("Data Not Found \n" + str(e))
 
 
+@api_view(['POST'])
+def user_logout(request):
+    try:
+
+        if request.method == 'POST':
+            refresh_token = request.query_params.get('refresh_token')
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            access_token = request.query_params.get('access_token')
+            token = AccessToken(access_token)
+            token.blacklist()
+
+
+
+            return Response("User Logged Out", status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response("Data Not Found \n" + str(e))
+
+
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 @authentication_classes((JWTAuthentication,))
 @permission_classes((IsAuthenticated,))
 def usertype_list(request):
     try:
+
         pk = request.query_params.get('pk')
         if pk == None:
             if request.method == 'GET':
