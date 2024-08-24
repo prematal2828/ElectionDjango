@@ -33,3 +33,16 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.username
 
+
+class BlacklistedAccessTokens(models.Model):
+    access_token = models.TextField(max_length=1000, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+@staticmethod
+def checkBlacklistedAccessTokens(request):
+    access_token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+    if BlacklistedAccessTokens.objects.filter(access_token=access_token).exists():
+        return True
+    else:
+        return False

@@ -10,6 +10,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 
 from Account.serializers import *
+from Account.models import BlacklistedAccessTokens, checkBlacklistedAccessTokens
 
 
 # Create your views here.
@@ -18,24 +19,27 @@ from Account.serializers import *
 @api_view(['POST'])
 def user_login(request):
     try:
-        data = JSONParser().parse(request)
-        serializer = UserLogInSerializer(data=data)
-        if serializer.is_valid():
-            phone = serializer.validated_data.get('phone')
-            password = serializer.validated_data.get('password')
-            user = authenticate(phone=phone, password=password)
+        if checkBlacklistedAccessTokens(request) is False:
+            data = JSONParser().parse(request)
+            serializer = UserLogInSerializer(data=data)
+            if serializer.is_valid():
+                phone = serializer.validated_data.get('phone')
+                password = serializer.validated_data.get('password')
+                user = authenticate(phone=phone, password=password)
 
-            if user is not None:
-                refresh = MyTokenObtainPairSerializer.get_token(user)
+                if user is not None:
+                    refresh = MyTokenObtainPairSerializer.get_token(user)
 
-                return Response({
-                    'refresh_token': str(refresh),
-                    'access_token': str(refresh.access_token)
-                }, status=status.HTTP_200_OK)
+                    return Response({
+                        'refresh_token': str(refresh),
+                        'access_token': str(refresh.access_token)
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response("Invalid Credentials", status=status.HTTP_401_UNAUTHORIZED)
             else:
-                return Response("Invalid Credentials", status=status.HTTP_401_UNAUTHORIZED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response("User Logged Out", status=status.HTTP_200_OK)
     except Exception as e:
         return Response("Data Not Found \n" + str(e))
 
@@ -49,11 +53,9 @@ def user_logout(request):
             token = RefreshToken(refresh_token)
             token.blacklist()
 
-            access_token = request.query_params.get('access_token')
-            token = AccessToken(access_token)
-            token.blacklist()
-
-
+            access_token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+            blacklist_access_token = BlacklistedAccessTokens(access_token=access_token)
+            blacklist_access_token.save()
 
             return Response("User Logged Out", status=status.HTTP_200_OK)
     except Exception as e:
@@ -65,34 +67,36 @@ def user_logout(request):
 @permission_classes((IsAuthenticated,))
 def usertype_list(request):
     try:
+        if checkBlacklistedAccessTokens(request) is False:
+            pk = request.query_params.get('pk')
+            if pk == None:
+                if request.method == 'GET':
+                    usertypes = UserType.objects.all()
+                    serializer = UserTypeSerializer(usertypes, many=True)
+                    return Response(serializer.data)
+                if request.method == 'POST':
+                    data = JSONParser().parse(request)
+                    serializer = UserTypeSerializer(data=data)
+                    if serializer.is_valid():
+                        serializer.save()
+                        return Response("User Type Added Successfully")
+            else:
+                usertype = UserType.objects.get(pk=pk)
+                if request.method == 'GET':
+                    serializer = UserTypeSerializer(usertype, many=False)
+                    return Response(serializer.data)
+                elif request.method == 'PUT':
+                    serializer = UserTypeSerializer(usertype, data=request.data)
+                    if serializer.is_valid():
+                        serializer.save()
+                        return Response("User Type Updated Successfully")
+                elif request.method == 'DELETE':
+                    usertype.delete()
+                    return Response("User Type Deleted Successfully")
 
-        pk = request.query_params.get('pk')
-        if pk == None:
-            if request.method == 'GET':
-                usertypes = UserType.objects.all()
-                serializer = UserTypeSerializer(usertypes, many=True)
-                return Response(serializer.data)
-            if request.method == 'POST':
-                data = JSONParser().parse(request)
-                serializer = UserTypeSerializer(data=data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response("User Type Added Successfully")
         else:
-            usertype = UserType.objects.get(pk=pk)
-            if request.method == 'GET':
-                serializer = UserTypeSerializer(usertype, many=False)
-                return Response(serializer.data)
-            elif request.method == 'PUT':
-                serializer = UserTypeSerializer(usertype, data=request.data)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response("User Type Updated Successfully")
-            elif request.method == 'DELETE':
-                usertype.delete()
-                return Response("User Type Deleted Successfully")
-
+            return Response("User Logged Out", status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response("Data Not Found \n" + str(e))
-        # return JsonResponse(e)
+# return JsonResponse(e)
