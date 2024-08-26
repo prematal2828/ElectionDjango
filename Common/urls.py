@@ -3,8 +3,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-
-    path('usertype_list/', usertype_list, name='usertype_list'),
-    path('usertype_list/?<int:pk>/', usertype_list, name='usertype_list')
+    path('country_list/', country_list, name='country_list'),
+    path('division_list/', division_list, name='division_list'),
 
 ]

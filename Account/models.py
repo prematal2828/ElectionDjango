@@ -7,11 +7,11 @@ from .custom_user_manager import CustomUserManager
 # Create your models here.
 
 class UserType(models.Model):
-    userTypeName = models.TextField(max_length=200, unique=True)
-    userTypeNameBan = models.TextField(max_length=200)
+    user_type_name = models.TextField(max_length=200, unique=True)
+    user_type_name_ban = models.TextField(max_length=200)
 
     def __str__(self):
-        return self.userTypeName
+        return self.user_type_name
 
 
 class UserAccount(AbstractBaseUser, PermissionsMixin):
@@ -19,7 +19,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     phone = models.TextField(max_length=11, unique=True)
     email = models.EmailField(_("email address"), unique=True)
 
-    userType = models.ForeignKey(UserType, on_delete=models.SET_NULL, blank=True, null=True)
+    user_type_id = models.ForeignKey(UserType, on_delete=models.SET_NULL, blank=True, null=True)
 
     is_staff = models.BooleanField(default=0)
     is_superuser = models.BooleanField(default=0)

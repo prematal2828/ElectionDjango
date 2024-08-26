@@ -5,82 +5,84 @@ from Common.models import Address
 
 # Create your models here.
 
-
 class ElectionType(models.Model):
-    electionTypeName = models.TextField(max_length=100)
-    electionTypeNameBan = models.TextField(max_length=100, null=True)
+    election_type_name = models.TextField(max_length=100)
+    election_type_name_ban = models.TextField(max_length=100, null=True)
 
-    createdAt = models.DateTimeField(auto_now_add=True)
-    createdBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='created_electionType')
-    updatedAt = models.DateTimeField(auto_now_add=True, null=True)
-    updatedBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='updated_electionType')
-    isDeleted = models.BooleanField(default=False)
-    deletedAt = models.DateTimeField(auto_now_add=True, null=True)
-    deletedBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='deleted_electionType')
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='created_election_type')
+    updated_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='updated_election_type')
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(auto_now_add=True, null=True)
+    deleted_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='deleted_election_type')
 
     def __str__(self):
-        return self.electionTypeName
+        return self.election_type_name
 
 
 class ElectionCenter(models.Model):
-    centerName = models.TextField(max_length=200)
-    centerNameBan = models.TextField(max_length=200)
+    center_name = models.TextField(max_length=200)
+    center_name_ban = models.TextField(max_length=200)
 
     address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
 
-    createdAt = models.DateTimeField(auto_now_add=True)
-    createdBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='created_electionCenter')
-    updatedAt = models.DateTimeField(auto_now_add=True, null=True)
-    updatedBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='updated_electionCenter')
-    isDeleted = models.BooleanField(default=False)
-    deletedAt = models.DateTimeField(auto_now_add=True, null=True)
-    deletedBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='deleted_electionCenter')
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='created_election_center')
+    updated_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='updated_election_center')
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(auto_now_add=True, null=True)
+    deleted_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='deleted_election_center')
 
     def __str__(self):
-        return self.centerName
+        return self.center_name
 
 
 class ElectionInfo(models.Model):
-    electionInfoName = models.TextField(max_length=100)
-    electionInfoNameBan = models.TextField(max_length=100, null=True)
-    electionType = models.ForeignKey(ElectionType, on_delete=models.SET_NULL, null=True, blank=True)
-    candidateIds = models.ManyToManyField(UserAccount, related_name='candidates_electionInfo')
-    workerIds = models.ManyToManyField(UserAccount, related_name='workers_electionInfo')
-    totalVoter = models.IntegerField()
+    election_info_name = models.TextField(max_length=100)
+    election_info_name_ban = models.TextField(max_length=100, null=True)
+    election_type = models.ForeignKey(ElectionType, on_delete=models.SET_NULL, null=True, blank=True)
+    candidate_ids = models.ManyToManyField(UserAccount, related_name='candidates_election_info')
+    worker_ids = models.ManyToManyField(UserAccount, related_name='workers_election_info')
+    total_voter = models.IntegerField()
 
-    createdAt = models.DateTimeField(auto_now_add=True)
-    createdBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='created_electionInfo')
-    updatedAt = models.DateTimeField(auto_now_add=True, null=True)
-    updatedBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='updated_electionInfo')
-    isDeleted = models.BooleanField(default=False)
-    deletedAt = models.DateTimeField(auto_now_add=True, null=True)
-    deletedBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='deleted_electionInfo')
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='created_election_info')
+    updated_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='updated_election_info')
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(auto_now_add=True, null=True)
+    deleted_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='deleted_election_info')
 
     def __str__(self):
-        return self.electionInfoName
+        return self.election_info_name
 
 
 class ElectionData(models.Model):
-    electionId = models.ForeignKey(ElectionInfo, on_delete=models.SET_NULL, null=True, blank=True)
-    workerId = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True)
-    voteCount = models.IntegerField()
+    election_id = models.ForeignKey(ElectionInfo, on_delete=models.SET_NULL, null=True, blank=True)
+    worker_id = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True)
+    vote_count = models.IntegerField()
 
-    createdAt = models.DateTimeField(auto_now_add=True)
-    createdBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='created_electionData')
-    updatedAt = models.DateTimeField(auto_now_add=True, null=True)
-    updatedBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='updated_electionData')
-    isDeleted = models.BooleanField(default=False)
-    deletedAt = models.DateTimeField(auto_now_add=True, null=True)
-    deletedBy = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
-                                  related_name='deleted_electionData')
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='created_election_data')
+    updated_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='updated_election_data')
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(auto_now_add=True, null=True)
+    deleted_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='deleted_election_data')
+
+    def __str__(self):
+        return str(self.election_id)

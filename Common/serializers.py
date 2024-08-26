@@ -2,6 +2,12 @@ from rest_framework import serializers
 from Common.models import *
 
 
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = '__all__'
+
+
 class DivisionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Division
