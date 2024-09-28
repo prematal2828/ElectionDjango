@@ -8,11 +8,17 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
-    path('user_login/', user_login, name='user_login'),
-    path('user_logout/', user_logout, name='user_logout'),
+    path('user_login/', UserLoginView.as_view(), name='user_login'),
+    path('user_logout/', UserLogoutView.as_view(), name='user_logout'),
 
-    path('usertype_list/', usertype_list, name='usertype_list'),
-    path('usertype_list/?<int:pk>/', usertype_list, name='usertype_list')
+    path('usertype/', UserTypeView.as_view(), name='usertype'),
+    path('usertype/?<int:pk>/', UserTypeView.as_view(), name='usertype'),
+
+    path('user/', UserView.as_view(), name='usertype'),
+    path('user/?<int:pk>/', UserView.as_view(), name='usertype'),
+
+    # path('user_detail/', TestModelView.as_view(), name='user_detail'),
+    # path('user_detail/?<int:pk>/', TestModelView.as_view(), name='user_detail'),
 
 
 ]

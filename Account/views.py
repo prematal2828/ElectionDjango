@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, logout
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,112 +11,194 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from Account.serializers import *
 from Account.models import BlacklistedAccessTokens
 
+from rest_framework.views import APIView
+from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import authenticate
+
 
 # Create your views here.
 
 
-@api_view(['POST'])
-def user_login(request):
-    try:
-        data = JSONParser().parse(request)
-        serializer = UserLogInSerializer(data=data)
-        if serializer.is_valid():
-            phone = serializer.validated_data.get('phone')
-            password = serializer.validated_data.get('password')
-            user = authenticate(phone=phone, password=password)
+class UserLoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data  # `request.data` automatically handles parsing in CBVs
+            serializer = UserLogInSerializer(data=data)
 
-            if user is not None:
-                refresh = MyTokenObtainPairSerializer.get_token(user)
+            if serializer.is_valid():
+                phone = serializer.validated_data.get('phone')
+                password = serializer.validated_data.get('password')
+                user = authenticate(phone=phone, password=password)
 
-                return Response({
-                    'refresh_token': str(refresh),
-                    'access_token': str(refresh.access_token)
-                }, status=status.HTTP_200_OK)
+                if user is not None:
+                    refresh = MyTokenObtainPairSerializer.get_token(user)
+
+                    return Response({
+                        'refresh_token': str(refresh),
+                        'access_token': str(refresh.access_token)
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response("Invalid Credentials", status=status.HTTP_401_UNAUTHORIZED)
             else:
-                return Response("Invalid Credentials", status=status.HTTP_401_UNAUTHORIZED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    except Exception as e:
-        return Response("Data Not Found \n" + str(e))
+        except Exception as e:
+            return Response("Data Not Found \n" + str(e), status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
-def user_logout(request):
-    try:
-        if request.method == 'POST':
+class UserLogoutView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            # Get the refresh token from query parameters
             refresh_token = request.query_params.get('refresh_token')
-            token = RefreshToken(refresh_token)
-            token.blacklist()
+            if refresh_token:
+                token = RefreshToken(refresh_token)
+                token.blacklist()  # Blacklist the refresh token
 
-            access_token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
-            blacklist_access_token = BlacklistedAccessTokens(access_token=access_token)
-            blacklist_access_token.save()
+            # Get the access token from request headers and blacklist it
+            auth_header = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')
+            if len(auth_header) == 2:
+                access_token = auth_header[1]
+                blacklist_access_token = BlacklistedAccessTokens(access_token=access_token)
+                blacklist_access_token.save()
 
+            # Log out the user
             logout(request)
 
             return Response("User Logged Out", status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response("Data Not Found \n" + str(e))
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'POST', 'PUT', 'DELETE'])
-@authentication_classes((JWTAuthentication,))
-@permission_classes((IsAuthenticated,))
-def usertype_list(request):
-    try:
-        if checkBlacklistedAccessTokens(request) is False:
+class UserTypeView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
             pk = request.query_params.get('pk')
-            if pk == None:
-                if request.method == 'GET':
-                    user_types = UserType.objects.all()
-                    serializer = UserTypeSerializer(user_types, many=True)
+            if pk is None:  # List all user types
+                user_types = UserType.objects.all()
+                serializer = UserTypeSerializer(user_types, many=True)
+                result_set = {
+                    "msg": 'Returned User Types list',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            else:  # Retrieve a single user type by pk
+                user_type = get_object_or_404(UserType, pk=pk)
+                serializer = UserTypeSerializer(user_type)
+                return Response(serializer.data, status=status.HTTP_200_OK)
 
-                    result_set = {
-                        "msg": 'Returned User Types list',
-                        "data": serializer.data,
-                    }
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
-                    return Response(result_set, status=status.HTTP_200_OK)
-                if request.method == 'POST':
-                    data = JSONParser().parse(request)
-                    serializer = UserTypeSerializer(data=data)
-                    if serializer.is_valid():
-                        serializer.save()
-                        return Response("User Type Added Successfully")
-            else:
-                user_type = UserType.objects.get(pk=pk)
-                if request.method == 'GET':
-                    serializer = UserTypeSerializer(user_type, many=False)
-                    return Response(serializer.data)
-                elif request.method == 'PUT':
-                    serializer = UserTypeSerializer(user_type, data=request.data)
-                    if serializer.is_valid():
-                        serializer.save()
-                        result_set = {
-                            "msg": 'Updated User Type',
-                            "data": serializer.data,
-                        }
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            serializer = UserTypeSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response("User Type Added Successfully", status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
-                        return Response(result_set, status=status.HTTP_200_OK)
-                elif request.method == 'DELETE':
-                    user_type.delete()
-                    result_set = {
-                        "msg": 'Deleted User Type',
-                        "data": None,
-                    }
-                    return Response(result_set, status=status.HTTP_200_OK)
+    def put(self, request, *args, **kwargs):
 
-        else:
+        try:
+            pk = request.query_params.get('pk')
+            if pk is None:
+                return Response({"msg": "pk is required for updating"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user_type = get_object_or_404(UserType, pk=pk)
+            serializer = UserTypeSerializer(user_type, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                result_set = {
+                    "msg": 'Updated User Type',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+
+        try:
+            pk = request.query_params.get('pk')
+            if pk is None:
+                return Response({"msg": "pk is required for deletion"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user_type = get_object_or_404(UserType, pk=pk)
+            user_type.delete()
             result_set = {
-                "msg": 'User Logged Out',
+                "msg": 'Deleted User Type',
+                "data": None,
+            }
+            return Response(result_set, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserView(APIView):
+    def get(self, request, *args, **kwargs):
+
+        try:
+            pk = request.query_params.get('pk')
+
+            if pk is None:  # List all users
+                users = UserAccount.objects.all()
+                serializer = UserAccountSerializer(users, many=True)
+                result_set = {
+                    "msg": 'Returned Users list',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            else:  # Retrieve a single user by pk
+                user = get_object_or_404(UserAccount, pk=pk)
+                serializer = UserAccountSerializer(user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            serializer = UserAccountSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response("User Added Successfully", status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk, *args, **kwargs):
+        try:
+            user = get_object_or_404(UserAccount, pk=pk)
+            serializer = UserAccountSerializer(user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                result_set = {
+                    "msg": 'Updated User',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            user = get_object_or_404(UserAccount, pk=pk)
+            user.delete()
+            result_set = {
+                "msg": 'Deleted User',
                 "data": None,
             }
             return Response(result_set, status=status.HTTP_200_OK)
 
-    except Exception as e:
-        result_set = {
-            "msg": e,
-            "data": None,
-        }
-        return Response(result_set, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
+

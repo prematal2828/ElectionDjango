@@ -24,6 +24,12 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         fields = ['phone', 'password']
 
 
+class UserAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAccount
+        fields = '__all__'
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
