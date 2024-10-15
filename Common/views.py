@@ -101,7 +101,7 @@ class DivisionView(APIView):
 
             if pk is None:  # List all divisions
                 divisions = Division.objects.all()
-                serializer = DivisionSerializer(divisions, many=True)
+                serializer = DivisionSerializer(divisions, many=True, include_country=True)
                 result_set = {
                     "msg": 'Returned Division list',
                     "data": serializer.data,

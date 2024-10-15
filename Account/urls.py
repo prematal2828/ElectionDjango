@@ -17,8 +17,4 @@ urlpatterns = [
     path('user/', UserView.as_view(), name='usertype'),
     path('user/?<int:pk>/', UserView.as_view(), name='usertype'),
 
-    # path('user_detail/', TestModelView.as_view(), name='user_detail'),
-    # path('user_detail/?<int:pk>/', TestModelView.as_view(), name='user_detail'),
-
-
 ]

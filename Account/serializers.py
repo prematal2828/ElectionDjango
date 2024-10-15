@@ -25,6 +25,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 
 
 class UserAccountSerializer(serializers.ModelSerializer):
+    user_type_details = UserTypeSerializer(required=False,read_only=True)
+
     class Meta:
         model = UserAccount
         fields = '__all__'

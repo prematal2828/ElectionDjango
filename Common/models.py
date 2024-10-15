@@ -13,7 +13,11 @@ class Country(models.Model):
 class Division(models.Model):
     division_name = models.TextField(max_length=100)
     division_name_ban = models.TextField(max_length=100, null=True)
-    country_id = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def country_details(self):
+        return self.country
 
     def __str__(self):
         return self.division_name
@@ -22,7 +26,11 @@ class Division(models.Model):
 class District(models.Model):
     district_name = models.TextField(max_length=100)
     district_name_ban = models.TextField(max_length=100, null=True)
-    division_id = models.ForeignKey(Division, on_delete=models.SET_NULL, null=True, blank=True)
+    division = models.ForeignKey(Division, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def division_details(self):
+        return self.division
 
     def __str__(self):
         return self.district_name
@@ -31,7 +39,11 @@ class District(models.Model):
 class Upazila(models.Model):
     upazila_name = models.TextField(max_length=100)
     upazila_name_ban = models.TextField(max_length=100, null=True)
-    district_id = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, blank=True)
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def district_details(self):
+        return self.district
 
     def __str__(self):
         return self.upazila_name
@@ -40,7 +52,11 @@ class Upazila(models.Model):
 class Union(models.Model):
     union_name = models.TextField(max_length=100)
     union_name_ban = models.TextField(max_length=100, null=True)
-    upazila_id = models.ForeignKey(Upazila, on_delete=models.SET_NULL, null=True, blank=True)
+    upazila = models.ForeignKey(Upazila, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def upazila_details(self):
+        return self.upazila
 
     def __str__(self):
         return self.union_name
@@ -49,7 +65,11 @@ class Union(models.Model):
 class Ward(models.Model):
     ward_name = models.TextField(max_length=100)
     ward_name_ban = models.TextField(max_length=100, null=True)
-    union_id = models.ForeignKey(Union, on_delete=models.SET_NULL, null=True, blank=True)
+    union = models.ForeignKey(Union, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def union_details(self):
+        return self.union
 
     def __str__(self):
         return self.ward_name
@@ -58,7 +78,11 @@ class Ward(models.Model):
 class CityCorporation(models.Model):
     city_corp_name = models.TextField(max_length=100)
     city_corp_name_ban = models.TextField(max_length=100, null=True)
-    division_id = models.ForeignKey(Division, on_delete=models.SET_NULL, null=True, blank=True)
+    division = models.ForeignKey(Division, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def division_details(self):
+        return self.division
 
     def __str__(self):
         return self.city_corp_name
@@ -67,7 +91,11 @@ class CityCorporation(models.Model):
 class Municipality(models.Model):
     municipality_name = models.TextField(max_length=100)
     municipality_name_ban = models.TextField(max_length=100, null=True)
-    district_id = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, blank=True)
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def district_details(self):
+        return self.district
 
     def __str__(self):
         return self.municipality_name
@@ -75,13 +103,41 @@ class Municipality(models.Model):
 
 class Address(models.Model):
     line1 = models.TextField(max_length=500)
-    division_id = models.ForeignKey(Division, on_delete=models.SET_NULL, null=True, blank=True)
-    district_id = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, blank=True)
-    upazila_id = models.ForeignKey(Upazila, on_delete=models.SET_NULL, null=True, blank=True)
-    union_id = models.ForeignKey(Union, on_delete=models.SET_NULL, null=True, blank=True)
-    ward_id = models.ForeignKey(Ward, on_delete=models.SET_NULL, null=True, blank=True)
-    city_corporation_id = models.ForeignKey(CityCorporation, on_delete=models.SET_NULL, null=True, blank=True)
-    municipality_id = models.ForeignKey(Municipality, on_delete=models.SET_NULL, null=True, blank=True)
+    division = models.ForeignKey(Division, on_delete=models.SET_NULL, null=True, blank=True)
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, blank=True)
+    upazila = models.ForeignKey(Upazila, on_delete=models.SET_NULL, null=True, blank=True)
+    union = models.ForeignKey(Union, on_delete=models.SET_NULL, null=True, blank=True)
+    ward = models.ForeignKey(Ward, on_delete=models.SET_NULL, null=True, blank=True)
+    city_corporation = models.ForeignKey(CityCorporation, on_delete=models.SET_NULL, null=True, blank=True)
+    municipality = models.ForeignKey(Municipality, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def division_details(self):
+        return self.division
+
+    @property
+    def district_details(self):
+        return self.district
+
+    @property
+    def upazila_details(self):
+        return self.upazila
+
+    @property
+    def union_details(self):
+        return self.union
+
+    @property
+    def ward_details(self):
+        return self.ward
+
+    @property
+    def city_corporation_details(self):
+        return self.city_corporation
+
+    @property
+    def cmunicipality_details(self):
+        return self.municipality
 
     def __str__(self):
         return self.line1
@@ -126,10 +182,26 @@ class Company(models.Model):
 
 
 class UserInfo(models.Model):
-    user_account_id = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    user_account = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, null=True, blank=True, on_delete=models.SET_NULL)
-    designation_id = models.ForeignKey(Designation, null=True, blank=True, on_delete=models.SET_NULL)
-    company_id = models.ForeignKey(Company, null=True, blank=True, on_delete=models.SET_NULL)
+    designation = models.ForeignKey(Designation, null=True, blank=True, on_delete=models.SET_NULL)
+    company = models.ForeignKey(Company, null=True, blank=True, on_delete=models.SET_NULL)
+
+    @property
+    def user_account_details(self):
+        return self.user_account
+
+    @property
+    def address_details(self):
+        return self.address
+
+    @property
+    def designation_details(self):
+        return self.designation
+
+    @property
+    def company_details(self):
+        return self.company
 
     def __str__(self):
-        return str(self.user_account_id)
+        return str(self.user_account.username)

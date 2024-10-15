@@ -41,6 +41,10 @@ class ElectionCenter(models.Model):
     deleted_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
                                    related_name='deleted_election_center')
 
+    @property
+    def address_details(self):
+        return self.address
+
     def __str__(self):
         return self.center_name
 
@@ -49,8 +53,8 @@ class ElectionInfo(models.Model):
     election_info_name = models.TextField(max_length=100)
     election_info_name_ban = models.TextField(max_length=100, null=True)
     election_type = models.ForeignKey(ElectionType, on_delete=models.SET_NULL, null=True, blank=True)
-    candidate_ids = models.ManyToManyField(UserAccount, related_name='candidates_election_info')
-    worker_ids = models.ManyToManyField(UserAccount, related_name='workers_election_info')
+    candidates = models.ManyToManyField(UserAccount, related_name='candidates_election_info')
+    workers = models.ManyToManyField(UserAccount, related_name='workers_election_info')
     total_voter = models.IntegerField()
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -64,13 +68,25 @@ class ElectionInfo(models.Model):
     deleted_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
                                    related_name='deleted_election_info')
 
+    @property
+    def election_type_details(self):
+        return self.election_type
+
+    @property
+    def candidates_details(self):
+        return self.candidates
+
+    @property
+    def workers_details(self):
+        return self.workers
+
     def __str__(self):
         return self.election_info_name
 
 
 class ElectionData(models.Model):
-    election_id = models.ForeignKey(ElectionInfo, on_delete=models.SET_NULL, null=True, blank=True)
-    worker_id = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True)
+    election = models.ForeignKey(ElectionInfo, on_delete=models.SET_NULL, null=True, blank=True)
+    worker = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True)
     vote_count = models.IntegerField()
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -84,5 +100,13 @@ class ElectionData(models.Model):
     deleted_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
                                    related_name='deleted_election_data')
 
+    @property
+    def election_details(self):
+        return self.election
+
+    @property
+    def worker_details(self):
+        return self.worker
+
     def __str__(self):
-        return str(self.election_id)
+        return str(self.election)

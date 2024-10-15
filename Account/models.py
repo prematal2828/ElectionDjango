@@ -19,7 +19,11 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     phone = models.TextField(max_length=11, unique=True)
     email = models.EmailField(_("email address"), unique=True)
 
-    user_type_id = models.ForeignKey(UserType, on_delete=models.SET_NULL, blank=True, null=True)
+    user_type = models.ForeignKey(UserType, on_delete=models.SET_NULL, blank=True, null=True)
+
+    @property
+    def user_type_details(self):
+        return self.user_type
 
     is_staff = models.BooleanField(default=0)
     is_superuser = models.BooleanField(default=0)
