@@ -1,4 +1,8 @@
-from django.contrib.auth import authenticate, logout
+from django.contrib.auth import authenticate, logout, login
+from django.template.defaulttags import csrf_token
+from django.views.decorators.csrf import csrf_exempt
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.generics import get_object_or_404
@@ -22,6 +26,21 @@ from django.contrib.auth import authenticate
 
 
 class UserLoginView(APIView):
+
+    @swagger_auto_schema(
+        operation_description="Login to your account",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'phone': openapi.Schema(type=openapi.TYPE_STRING, description='Phone'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Password'),
+            },
+            required=['name']
+        ),
+        responses={201: openapi.Response('')}
+
+    )
+
     def post(self, request, *args, **kwargs):
         try:
             data = request.data  # `request.data` automatically handles parsing in CBVs
@@ -33,6 +52,7 @@ class UserLoginView(APIView):
                 user = authenticate(phone=phone, password=password)
 
                 if user is not None:
+                    login(request, user)
                     refresh = MyTokenObtainPairSerializer.get_token(user)
 
                     return Response({
@@ -201,4 +221,3 @@ class UserView(APIView):
 
         except Exception as e:
             return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
-

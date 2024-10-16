@@ -73,7 +73,7 @@ class UnionSerializer(serializers.ModelSerializer):
         super(UnionSerializer, self).__init__(*args, **kwargs)
 
         if not include_upazila:
-            self.fields.pop('include_upazila')
+            self.fields.pop('upazila_details')
 
 
 class WardSerializer(serializers.ModelSerializer):
