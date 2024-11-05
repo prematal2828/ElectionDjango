@@ -1,16 +1,16 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from .views import *
 
 urlpatterns = [
-    path('country/', CountryView.as_view(), name='country'),
-    path('division/', DivisionView.as_view(), name='division'),
-    path('district/', DistrictView.as_view(), name='district'),
-    path('upazila/', UpazilaView.as_view(), name='upazila'),
-    path('union/', UnionView.as_view(), name='union'),
-    path('ward/', WardView.as_view(), name='ward'),
-    path('city_corporation/', CityCorporationView.as_view(), name='city_corporation'),
-    path('municipality/', MunicipalityView.as_view(), name='municipality'),
-    path('address/', AddressView.as_view(), name='address'),
+    re_path('country/(?P<pk>\d+)?/?$', CountryView.as_view(), name='country'),
+    re_path('division/(?P<pk>\d+)?/?$', DivisionView.as_view(), name='division'),
+    re_path('district/(?P<pk>\d+)?/?$', DistrictView.as_view(), name='district'),
+    re_path('upazila/(?P<pk>\d+)?/?$', UpazilaView.as_view(), name='upazila'),
+    re_path('union/(?P<pk>\d+)?/?$', UnionView.as_view(), name='union'),
+    re_path('ward/(?P<pk>\d+)?/?$', WardView.as_view(), name='ward'),
+    re_path('city_corporation/(?P<pk>\d+)?/?$', CityCorporationView.as_view(), name='city_corporation'),
+    re_path('municipality/(?P<pk>\d+)?/?$', MunicipalityView.as_view(), name='municipality'),
+    re_path('address/(?P<pk>\d+)?/?$', AddressView.as_view(), name='address'),
 
 ]

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -15,10 +15,11 @@ urlpatterns = [
 
     path('user_logout/', UserLogoutView.as_view(), name='user_logout'),
 
-    path('usertype/', UserTypeView.as_view(), name='usertype'),
-    path('usertype/?<int:pk>/', UserTypeView.as_view(), name='usertype'),
+    # path('usertype/', UserTypeView.as_view(), name='usertype'),
+    re_path(r'^usertype/(?P<pk>\d+)?/?$', UserTypeView.as_view(), name='usertype'),
 
-    path('user/', UserView.as_view(), name='usertype'),
-    path('user/?<int:pk>/', UserView.as_view(), name='usertype'),
+
+    # path('user/', UserView.as_view(), name='user'),
+    re_path(r'^user/(?P<pk>\d+)?/?$', UserView.as_view(), name='user'),
 
 ]

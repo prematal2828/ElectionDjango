@@ -29,18 +29,9 @@ class UserLoginView(APIView):
 
     @swagger_auto_schema(
         operation_description="Login to your account",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'phone': openapi.Schema(type=openapi.TYPE_STRING, description='Phone'),
-                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Password'),
-            },
-            required=['name']
-        ),
+        request_body=UserLogInSerializer,
         responses={201: openapi.Response('')}
-
     )
-
     def post(self, request, *args, **kwargs):
         try:
             data = request.data  # `request.data` automatically handles parsing in CBVs
@@ -93,6 +84,7 @@ class UserLogoutView(APIView):
 
 
 class UserTypeView(APIView):
+
     def get(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -112,6 +104,11 @@ class UserTypeView(APIView):
         except Exception as e:
             return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(
+        operation_description="Add new user type",
+        request_body=UserTypeSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = request.data
@@ -123,6 +120,11 @@ class UserTypeView(APIView):
         except Exception as e:
             return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(
+        operation_description="Update user type by id",
+        request_body=UserTypeSerializer,
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
 
         try:
