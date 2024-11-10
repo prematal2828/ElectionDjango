@@ -29,7 +29,7 @@ class JWTAuthenticationMiddleware:
             return JsonResponse({"msg": "Unauthorized Access", "data": None}, status=401)
 
         if checkBlacklistedAccessTokens(request) or not request.user.is_authenticated or access_token == '':
-            if access_token != '':
+            if access_token != '' and not BlacklistedAccessTokens.objects.filter(access_token=access_token).exists():
                 blacklist_access_token = BlacklistedAccessTokens(access_token=access_token)
                 blacklist_access_token.save()
             logout(request)

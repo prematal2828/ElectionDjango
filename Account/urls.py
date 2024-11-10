@@ -15,11 +15,7 @@ urlpatterns = [
 
     path('user_logout/', UserLogoutView.as_view(), name='user_logout'),
 
-    # path('usertype/', UserTypeView.as_view(), name='usertype'),
-    re_path(r'^usertype/(?P<pk>\d+)?/?$', UserTypeView.as_view(), name='usertype'),
-
-
-    # path('user/', UserView.as_view(), name='user'),
-    re_path(r'^user/(?P<pk>\d+)?/?$', UserView.as_view(), name='user'),
+    path('usertype/', UserTypeView.as_view(), name='usertype'),
+    path('user/', UserView.as_view(), name='user'),
 
 ]

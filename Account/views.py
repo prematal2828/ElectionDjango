@@ -30,7 +30,7 @@ class UserLoginView(APIView):
     @swagger_auto_schema(
         operation_description="Login to your account",
         request_body=UserLogInSerializer,
-        responses={201: openapi.Response('')}
+        responses={200: openapi.Response('')}
     )
     def post(self, request, *args, **kwargs):
         try:
@@ -72,8 +72,9 @@ class UserLogoutView(APIView):
             auth_header = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')
             if len(auth_header) == 2:
                 access_token = auth_header[1]
-                blacklist_access_token = BlacklistedAccessTokens(access_token=access_token)
-                blacklist_access_token.save()
+                if checkBlacklistedAccessTokens(request):
+                    blacklist_access_token = BlacklistedAccessTokens(access_token=access_token)
+                    blacklist_access_token.save()
 
             # Log out the user
             logout(request)
@@ -84,7 +85,19 @@ class UserLogoutView(APIView):
 
 
 class UserTypeView(APIView):
-
+    @swagger_auto_schema(
+        operation_description="Get all user types or single user by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,  # This makes `pk` a query parameter
+                description="Optional primary key for the user type",
+                type=openapi.TYPE_INTEGER,
+                required=False  # Mark as optional
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -121,8 +134,17 @@ class UserTypeView(APIView):
             return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
-        operation_description="Update user type by id",
+        operation_description="Update user type",
         request_body=UserTypeSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,  # This makes `pk` a query parameter
+                description="Id of the user type",
+                type=openapi.TYPE_INTEGER,
+                required=True  # Mark as optional
+            )
+        ],
         responses={201: openapi.Response('')}
     )
     def put(self, request, *args, **kwargs):
@@ -145,6 +167,20 @@ class UserTypeView(APIView):
         except Exception as e:
             return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(
+        operation_description="Update user type",
+        request_body=UserTypeSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,  # This makes `pk` a query parameter
+                description="Id of the user type",
+                type=openapi.TYPE_INTEGER,
+                required=True  # Mark as optional
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
 
         try:
@@ -184,6 +220,11 @@ class UserView(APIView):
         except Exception as e:
             return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(
+        operation_description="Add new user",
+        request_body=UserAccountSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = request.data
@@ -196,6 +237,20 @@ class UserView(APIView):
         except Exception as e:
             return Response({"msg": str(e), "data": None}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(
+        operation_description="Update user",
+        request_body=UserAccountSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,  # This makes `pk` a query parameter
+                description="Optional primary key for the user type",
+                type=openapi.TYPE_INTEGER,
+                required=False  # Mark as optional
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, pk, *args, **kwargs):
         try:
             user = get_object_or_404(UserAccount, pk=pk)

@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.parsers import JSONParser
@@ -11,8 +13,21 @@ from .serializers import *
 from .models import *
 from Account.models import checkBlacklistedAccessTokens
 
-
 class CountryView(APIView):
+
+    @swagger_auto_schema(
+        operation_description="Get all countries or a single country by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,  # This makes `pk` a query parameter
+                description="Optional primary key for the country",
+                type=openapi.TYPE_INTEGER,
+                required=False  # Mark as optional
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -35,6 +50,11 @@ class CountryView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new Country",
+        request_body=CountrySerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -50,6 +70,20 @@ class CountryView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update an existing Country",
+        request_body=CountrySerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,  # This makes `pk` a query parameter
+                description="Primary key of the country to update",
+                type=openapi.TYPE_INTEGER,
+                required=True  # Mark as required for update
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -73,6 +107,19 @@ class CountryView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Delete a country by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,  # This makes `pk` a query parameter
+                description="Primary key of the country to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True  # Mark as required for deletion
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -93,8 +140,20 @@ class CountryView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
 class DivisionView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all divisions or a single division by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the division",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -118,6 +177,11 @@ class DivisionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new Division",
+        request_body=DivisionSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -133,6 +197,20 @@ class DivisionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update a Division",
+        request_body=DivisionSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the division to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -156,6 +234,19 @@ class DivisionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Delete a division by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the division to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -179,6 +270,19 @@ class DivisionView(APIView):
 
 
 class DistrictView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all districts or a single district by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the district",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -200,6 +304,11 @@ class DistrictView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new District",
+        request_body=DistrictSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -214,6 +323,20 @@ class DistrictView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update a District",
+        request_body=DistrictSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the district to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -233,6 +356,19 @@ class DistrictView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Delete a district by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the district to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             pk = request.query_params.get('pk')
@@ -251,6 +387,19 @@ class DistrictView(APIView):
 
 
 class UpazilaView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all upazilas or a single upazila by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the upazila",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             # Check if a specific primary key (pk) is provided
@@ -275,6 +424,11 @@ class UpazilaView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new Upazila",
+        request_body=UpazilaSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             # Parse the incoming request data
@@ -295,6 +449,20 @@ class UpazilaView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update an Upazila",
+        request_body=UpazilaSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the upazila to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             # Retrieve the Upazila object by primary key
@@ -323,105 +491,19 @@ class UpazilaView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-    def delete(self, request, *args, **kwargs):
-        try:
-            # Retrieve the Upazila object by primary key
-            pk = request.query_params.get('pk')
-            if pk is None:
-                return Response(
-                    {"msg": "pk is required for deletion"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            upazila = get_object_or_404(Upazila, pk=pk)
-            upazila.delete()
-
-            result_set = {
-                "msg": 'Deleted Upazila',
-                "data": None,
-            }
-            return Response(result_set, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            return Response(
-                {"msg": str(e), "data": None},
-                status=status.HTTP_400_BAD_REQUEST
+    @swagger_auto_schema(
+        operation_description="Delete an upazila by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the upazila to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
             )
-
-
-class UpazilaView(APIView):
-    def get(self, request, *args, **kwargs):
-        try:
-            # Check if a specific primary key (pk) is provided
-            pk = request.query_params.get('pk')
-
-            if pk is None:  # List all Upazilas
-                upazilas = Upazila.objects.all()
-                serializer = UpazilaSerializer(upazilas, many=True)
-                result_set = {
-                    "msg": 'Returned Upazila list',
-                    "data": serializer.data,
-                }
-                return Response(result_set, status=status.HTTP_200_OK)
-            else:  # Retrieve a specific Upazila by pk
-                upazila = get_object_or_404(Upazila, pk=pk)
-                serializer = UpazilaSerializer(upazila)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            return Response(
-                {"msg": str(e), "data": None},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-    def post(self, request, *args, **kwargs):
-        try:
-            # Parse the incoming request data
-            data = JSONParser().parse(request)
-            serializer = UpazilaSerializer(data=data)
-
-            if serializer.is_valid():
-                serializer.save()
-                return Response(
-                    {"msg": "Upazila Added Successfully"},
-                    status=status.HTTP_201_CREATED
-                )
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            return Response(
-                {"msg": str(e), "data": None},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-    def put(self, request, *args, **kwargs):
-        try:
-            # Retrieve the Upazila object by primary key
-            pk = request.query_params.get('pk')
-            if pk is None:
-                return Response(
-                    {"msg": "pk is required for updating"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            upazila = get_object_or_404(Upazila, pk=pk)
-            serializer = UpazilaSerializer(upazila, data=request.data)
-
-            if serializer.is_valid():
-                serializer.save()
-                result_set = {
-                    "msg": 'Updated Upazila',
-                    "data": serializer.data,
-                }
-                return Response(result_set, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            return Response(
-                {"msg": str(e), "data": None},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             # Retrieve the Upazila object by primary key
@@ -449,6 +531,19 @@ class UpazilaView(APIView):
 
 
 class UnionView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all unions or a single union by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the union",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -472,6 +567,11 @@ class UnionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new Union",
+        request_body=UnionSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -490,6 +590,20 @@ class UnionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update a Union",
+        request_body=UnionSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the union to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -516,6 +630,19 @@ class UnionView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Delete a union by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the union to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -542,6 +669,19 @@ class UnionView(APIView):
 
 
 class WardView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all wards or a single ward by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the ward",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -565,6 +705,11 @@ class WardView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new Ward",
+        request_body=WardSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -583,6 +728,20 @@ class WardView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update a Ward",
+        request_body=WardSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the ward to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -609,6 +768,19 @@ class WardView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Delete a ward by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the ward to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -635,6 +807,19 @@ class WardView(APIView):
 
 
 class CityCorporationView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all city corporations or a single city corporation by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the city corporation",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -658,6 +843,11 @@ class CityCorporationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new City Corporation",
+        request_body=CityCorporationSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -676,6 +866,20 @@ class CityCorporationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update a City Corporation",
+        request_body=CityCorporationSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the city corporation to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -702,6 +906,19 @@ class CityCorporationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Delete a city corporation by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the city corporation to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -728,6 +945,19 @@ class CityCorporationView(APIView):
 
 
 class MunicipalityView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all municipalities or a single municipality by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the municipality",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -751,6 +981,11 @@ class MunicipalityView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new Municipality",
+        request_body=MunicipalitySerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -769,6 +1004,20 @@ class MunicipalityView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update a Municipality",
+        request_body=MunicipalitySerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the municipality to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -795,6 +1044,19 @@ class MunicipalityView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Delete a municipality by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the municipality to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -821,6 +1083,20 @@ class MunicipalityView(APIView):
 
 
 class AddressView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all addresses or a single address by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the address",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
+
     def get(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -844,6 +1120,11 @@ class AddressView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Add new Address",
+        request_body=AddressSerializer,
+        responses={201: openapi.Response('')}
+    )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
@@ -862,6 +1143,20 @@ class AddressView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Update an Address",
+        request_body=AddressSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the address to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={201: openapi.Response('')}
+    )
     def put(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -888,6 +1183,19 @@ class AddressView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @swagger_auto_schema(
+        operation_description="Delete an address by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the address to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def delete(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')

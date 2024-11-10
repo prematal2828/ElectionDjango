@@ -89,7 +89,7 @@ class WardSerializer(serializers.ModelSerializer):
         super(WardSerializer, self).__init__(*args, **kwargs)
 
         if not include_union:
-            self.fields.pop('include_union')
+            self.fields.pop('union_details')
 
 
 class CityCorporationSerializer(serializers.ModelSerializer):
