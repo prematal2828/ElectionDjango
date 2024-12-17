@@ -25,7 +25,7 @@ from rest_framework.permissions import AllowAny
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Your Project API",
+        title="Election Django Api",
         default_version='v1',
         description="API documentation for your project",
         terms_of_service="https://www.google.com/policies/terms/",
@@ -41,6 +41,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('Account.urls')),
     path('common/', include('Common.urls')),
+    path('election/', include('Election.urls')),
     # re_path(r'^swagger(?P<format>\.json|\.yaml)$',
     #         authentication_classes([])(permission_classes([AllowAny])(schema_view.without_ui(cache_timeout=0))),
     #         name='schema-json'),

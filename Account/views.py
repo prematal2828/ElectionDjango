@@ -105,7 +105,7 @@ class UserTypeView(APIView):
                 user_types = UserType.objects.all()
                 serializer = UserTypeSerializer(user_types, many=True)
                 result_set = {
-                    "msg": 'Returned User Types list',
+                    "msg": 'User Types list is empty' if serializer.data is None else 'Returned User Types list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -209,7 +209,7 @@ class UserView(APIView):
                 users = UserAccount.objects.all()
                 serializer = UserAccountSerializer(users, many=True)
                 result_set = {
-                    "msg": 'Returned Users list',
+                    "msg": 'Users list is empty' if serializer.data is None else 'Returned Users list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)

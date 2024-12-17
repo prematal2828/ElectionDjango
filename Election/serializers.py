@@ -8,6 +8,12 @@ class ElectionTypeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ElectionCenterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ElectionCenter
+        fields = '__all__'
+
+
 class ElectionInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ElectionInfo

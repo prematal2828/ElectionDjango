@@ -35,7 +35,7 @@ class CountryView(APIView):
                 countries = Country.objects.all()
                 serializer = CountrySerializer(countries, many=True)
                 result_set = {
-                    "msg": 'Returned Country list',
+                    "msg": 'Country list is empty' if serializer.data is None else 'Returned Country list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -162,7 +162,7 @@ class DivisionView(APIView):
                 divisions = Division.objects.all()
                 serializer = DivisionSerializer(divisions, many=True, include_country=True)
                 result_set = {
-                    "msg": 'Returned Division list',
+                    "msg": 'Division list is empty' if serializer.data is None else 'Division Country list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -290,7 +290,7 @@ class DistrictView(APIView):
                 district_list = District.objects.all()
                 serializer = DistrictSerializer(district_list, many=True)
                 result_set = {
-                    "msg": 'Returned District list',
+                    "msg": 'District list is empty' if serializer.data is None else 'Returned District list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -409,7 +409,7 @@ class UpazilaView(APIView):
                 upazilas = Upazila.objects.all()
                 serializer = UpazilaSerializer(upazilas, many=True)
                 result_set = {
-                    "msg": 'Returned Upazila list',
+                    "msg": 'Upazila list is empty' if serializer.data is None else 'Returned Upazila list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -552,7 +552,7 @@ class UnionView(APIView):
                 unions = Union.objects.all()
                 serializer = UnionSerializer(unions, many=True)
                 result_set = {
-                    "msg": 'Returned Union list',
+                    "msg": 'Union list is empty' if serializer.data is None else 'Returned Union list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -690,7 +690,7 @@ class WardView(APIView):
                 wards = Ward.objects.all()
                 serializer = WardSerializer(wards, many=True)
                 result_set = {
-                    "msg": 'Returned Ward list',
+                    "msg": 'Ward list is empty' if serializer.data is None else 'Returned Ward list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -829,6 +829,7 @@ class CityCorporationView(APIView):
                 serializer = CityCorporationSerializer(city_corporations, many=True)
                 result_set = {
                     "msg": 'Returned CityCorporation list',
+                    "msg": 'CityCorporation list is empty' if serializer.data is None else 'Returned CityCorporation list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -966,7 +967,7 @@ class MunicipalityView(APIView):
                 municipalities = Municipality.objects.all()
                 serializer = MunicipalitySerializer(municipalities, many=True)
                 result_set = {
-                    "msg": 'Returned Municipality list',
+                    "msg": 'Municipality list is empty' if serializer.data is None else 'Returned Municipality list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -1096,7 +1097,6 @@ class AddressView(APIView):
         ],
         responses={200: openapi.Response('')}
     )
-
     def get(self, request, *args, **kwargs):
         try:
             primary_key = request.query_params.get('pk')
@@ -1105,7 +1105,7 @@ class AddressView(APIView):
                 addresses = Address.objects.all()
                 serializer = AddressSerializer(addresses, many=True)
                 result_set = {
-                    "msg": 'Returned Address list',
+                    "msg": 'Address list is empty' if serializer.data is None else 'Returned Address list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
