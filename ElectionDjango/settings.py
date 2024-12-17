@@ -180,25 +180,25 @@ CORS_ALLOW_CREDENTIALS = True
 # CORS_ALLOWED_ORIGIN_REGEXES = [
 #     'http://localhost:3030',
 # ]
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173/",
+]
 #
-# CORS_ALLOW_METHODS = (
-#     'GET',
-#     'POST',
-#     'PUT',
-#     'PATCH',
-#     'DELETE',
-#     'OPTIONS'
-# )
-#
-# CORS_ALLOW_HEADERS = (
-#     'x-requested-with',
-#     'content-type',
-#     'accept',
-#     'origin',
-#     'authorization',
-#     'x-csrftoken',
-#     'HTTP_AUTHORIZATION'
-# )
+CORS_ALLOW_METHODS = (
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS'
+)
+
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+    'HTTP_AUTHORIZATION'
+)
