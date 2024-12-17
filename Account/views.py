@@ -86,7 +86,7 @@ class UserLogoutView(APIView):
 
 class UserTypeView(APIView):
     @swagger_auto_schema(
-        operation_description="Get all user types or single user by id",
+        operation_description="Get all user types or single user type by id",
         manual_parameters=[
             openapi.Parameter(
                 'pk',
@@ -200,6 +200,19 @@ class UserTypeView(APIView):
 
 
 class UserView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all user or single user by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,  # This makes `pk` a query parameter
+                description="Optional primary key for the user",
+                type=openapi.TYPE_INTEGER,
+                required=False  # Mark as optional
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
     def get(self, request, *args, **kwargs):
 
         try:

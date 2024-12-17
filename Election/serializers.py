@@ -24,3 +24,10 @@ class ElectionDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ElectionData
         fields = '__all__'
+
+
+class ElectionDetailSerializer(serializers.Serializer):
+    election = ElectionInfoSerializer()
+    total_votes = serializers.IntegerField()
+
+

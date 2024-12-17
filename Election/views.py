@@ -2,12 +2,9 @@ from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .serializers import *
 from .models import *
@@ -163,7 +160,8 @@ class ElectionCenterView(APIView):
                 election_center_list = ElectionCenter.objects.all()
                 serializer = ElectionCenterSerializer(election_center_list, many=True)
                 result_set = {
-                    "msg": 'ElectionCenter list is empty' if serializer.data is None else 'Returned ElectionCenter list',
+                    "msg": 'Election Center list is empty' if serializer.data is None else 'Returned Election Center '
+                                                                                           'list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -431,7 +429,7 @@ class ElectionDataView(APIView):
                 election_data_list = ElectionData.objects.all()
                 serializer = ElectionDataSerializer(election_data_list, many=True)
                 result_set = {
-                    "msg": 'ElectionData list is empty' if serializer.data is None else 'Returned ElectionData list',
+                    "msg": 'Election Data list is empty' if serializer.data is None else 'Returned Election Data list',
                     "data": serializer.data,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
@@ -542,3 +540,51 @@ class ElectionDataView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+
+class ElectionDetailView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all election details or a single election data by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the election details",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+
+        responses={200: ElectionDetailSerializer}
+    )
+    def get(self, request, *args, **kwargs):
+        try:
+            election_details = []
+            pk = request.query_params.get('pk')
+            if pk is None:  # List all election details
+                elections = ElectionInfo.objects.all()
+
+                for election in elections:
+                    total_votes_in_this_election = sum(
+                        election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
+                    election_details.append(election, total_votes_in_this_election)
+
+                serializer = ElectionDetailSerializer(election_details, many=True)
+                result_set = {
+                    "msg": 'Election Details list is empty' if serializer.data is None else 'Returned Election Details list',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            else:  # Retrieve a specific election data by pk
+                election = get_object_or_404(ElectionInfo, pk=pk)
+                total_votes_in_this_election = sum(
+                    election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
+                election_details.append(election, total_votes_in_this_election)
+
+                serializer = ElectionDetailSerializer(election_details, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )

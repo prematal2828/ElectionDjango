@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(ElectionCenter)
 admin.site.register(ElectionInfo)
 admin.site.register(ElectionData)
+admin.site.register(ElectionType)

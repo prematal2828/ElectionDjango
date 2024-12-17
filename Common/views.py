@@ -2,16 +2,13 @@ from django.shortcuts import get_object_or_404
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .serializers import *
 from .models import *
-from Account.models import checkBlacklistedAccessTokens
+
 
 class CountryView(APIView):
 
@@ -139,6 +136,7 @@ class CountryView(APIView):
                 {"msg": str(e), "data": None},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
 
 class DivisionView(APIView):
     @swagger_auto_schema(
