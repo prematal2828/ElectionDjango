@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
-
+from corsheaders.defaults import default_headers
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -172,33 +172,44 @@ SWAGGER_SETTINGS = {
     'JSON_EDITOR': True,  # Optional: Enables an editable JSON input for body params
 }
 
-CORS_ALLOW_ALL_ORIGINS = True  # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
-CORS_ALLOW_CREDENTIALS = True
+#CORS_ALLOW_ALL_ORIGINS = True  # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+# CORS CONFIGURATION
+#CORS_ALLOW_ALL_ORIGINS = True  # Set to False to explicitly define allowed origins
+#CORS_ALLOW_CREDENTIALS = True
+
+
+
+# MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',  # Vue frontend origin
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    #'OPTIONS',
+]
+
+CORS_ALLOW_HEADERS = [
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'origin',
+    'authorization',
+    'x-csrftoken',
+]
+
+# CORS_ALLOW_CREDENTIALS = True
+
 # CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:3030',
-# ]  # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#     'http://localhost:3030',
+#     "http://localhost:5173",  # Your frontend's origin
 # ]
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
+
+# CORS_ALLOW_HEADERS = list(default_headers) + [
+#     "x-refresh-token",  # Custom header
+#     "X-Custom-Header",  # Another example
 # ]
-#
-# CORS_ALLOW_METHODS = (
-#     'GET',
-#     'POST',
-#     'PUT',
-#     'PATCH',
-#     'DELETE',
-#     'OPTIONS'
-# )
-#
-# CORS_ALLOW_HEADERS = (
-#     'x-requested-with',
-#     'content-type',
-#     'accept',
-#     'origin',
-#     'authorization',
-#     'x-csrftoken',
-#     'HTTP_AUTHORIZATION'
-# )
