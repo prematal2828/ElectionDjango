@@ -24,9 +24,3 @@ class ElectionDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ElectionData
         exclude = ['created_by', 'created_at', 'updated_by', 'updated_at', 'is_deleted', 'deleted_by', 'deleted_at']
-
-
-class ElectionDetailSerializer(serializers.Serializer):
-    election = serializers.CharField()
-    total_votes = serializers.IntegerField()
-

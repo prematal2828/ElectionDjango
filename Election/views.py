@@ -9,8 +9,6 @@ from rest_framework.views import APIView
 from .serializers import *
 from .models import *
 
-from types import SimpleNamespace
-
 
 class ElectionTypeView(APIView):
 
@@ -556,7 +554,7 @@ class ElectionDetailView(APIView):
             )
         ],
 
-        responses={200: ElectionDetailSerializer}
+        responses={200: openapi.Response("")}
     )
     def get(self, request, *args, **kwargs):
         try:
@@ -569,14 +567,13 @@ class ElectionDetailView(APIView):
                 for election in elections:
                     total_votes_in_this_election = sum(
                         election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
-                    election_details.append([election, total_votes_in_this_election])
-                    # election_details = SimpleNamespace(election=election,
-                    #                                    total_votes_in_this_election=total_votes_in_this_election)
+                    election_details.append({**ElectionInfoSerializer(election).data,
+                                             "total_votes_in_this_election": total_votes_in_this_election})
 
-                serializer = ElectionDetailSerializer(election_details, many=True)
                 result_set = {
-                    "msg": 'Election Details list is empty' if serializer.data is None else 'Returned Election Details list',
-                    "data": serializer.data,
+                    "msg": 'Election Details list is empty' if len(
+                        election_details) == 0 else 'Returned Election Details list',
+                    "data": election_details,
                 }
                 return Response(result_set, status=status.HTTP_200_OK)
             else:  # Retrieve a specific election data by pk
@@ -584,13 +581,13 @@ class ElectionDetailView(APIView):
                 total_votes_in_this_election = sum(
                     election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
 
-                election_details.append(
-                    [ElectionInfoSerializer(election), total_votes_in_this_election])
+                election_details = [{**ElectionInfoSerializer(election).data,
+                                     "total_votes_in_this_election": total_votes_in_this_election}]
 
-                serializer = ElectionDetailSerializer(election_details.data[0][0], many=True)
                 result_set = {
-                    "msg": 'Election Details list is empty' if election_details is None else 'Returned Election Details list',
-                    "data": serializer,
+                    "msg": 'Election Details list is empty' if len(
+                        election_details) == 0 is None else 'Returned Election Details list',
+                    "data": election_details,
                 }
 
                 return Response(result_set, status=status.HTTP_200_OK)
