@@ -5,7 +5,8 @@ from Election.models import *
 class ElectionTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ElectionType
-        exclude = ['created_by', 'created_at', 'updated_by', 'updated_at', 'is_deleted', 'deleted_by', 'deleted_at']
+        # exclude = ['created_by', 'created_at', 'updated_by', 'updated_at', 'is_deleted', 'deleted_by', 'deleted_at']
+        fields = '__all__'
 
 
 class ElectionCenterSerializer(serializers.ModelSerializer):
