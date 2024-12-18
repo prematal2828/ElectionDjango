@@ -81,7 +81,9 @@ class ElectionInfo(models.Model):
     parties = models.ManyToManyField(Party, related_name='party_info', blank=True)
 
     workers = models.ManyToManyField(UserAccount, related_name='workers_info')
-    total_voter = models.IntegerField()
+
+    total_voter = models.IntegerField(null=True, blank=True, default=0)
+    total_votes = models.IntegerField(null=True, blank=True, default=0)
 
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
