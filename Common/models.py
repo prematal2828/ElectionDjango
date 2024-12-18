@@ -205,3 +205,32 @@ class UserInfo(models.Model):
 
     def __str__(self):
         return str(self.user_account.username)
+
+
+class Party(models.Model):
+    party_name = models.TextField(max_length=200)
+    party_name_ban = models.TextField(max_length=200, null=True)
+    party_symbol = models.TextField(max_length=200, null=True)
+    party_symbol_image = models.ImageField(upload_to='Images/', null=True, blank=True)
+
+    party_members = models.ManyToManyField(UserAccount, related_name="party_info", blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='created_party')
+    updated_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='updated_party')
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(auto_now_add=True, null=True)
+    deleted_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
+                                   related_name='deleted_party')
+
+    @property
+    def party_member_details(self):
+        return self.party_members
+
+    def __str__(self):
+        return self.party_name
+
+

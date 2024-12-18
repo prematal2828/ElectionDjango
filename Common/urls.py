@@ -12,5 +12,6 @@ urlpatterns = [
     path('city_corporation/', CityCorporationView.as_view(), name='city_corporation'),
     path('municipality/', MunicipalityView.as_view(), name='municipality'),
     path('address/', AddressView.as_view(), name='address'),
+    path('party/', PartyView.as_view(), name='party'),
 
 ]

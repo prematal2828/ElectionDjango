@@ -1221,3 +1221,141 @@ class AddressView(APIView):
                 {"msg": str(e), "data": None},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class PartyView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all parties or a single party by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the party",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
+    def get(self, request, *args, **kwargs):
+        try:
+            primary_key = request.query_params.get('pk')
+
+            if primary_key is None:  # List all Parties
+                parties = Party.objects.all()
+                serializer = PartySerializer(parties, many=True)
+                result_set = {
+                    "msg": 'Party list is empty' if not serializer.data else 'Returned Party list',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            else:  # Retrieve a specific Party by primary key
+                party = get_object_or_404(Party, pk=primary_key)
+                serializer = PartySerializer(party)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        operation_description="Add new Party",
+        request_body=PartySerializer,
+        responses={201: openapi.Response('')}
+    )
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            serializer = PartySerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {"msg": "Party Added Successfully"},
+                    status=status.HTTP_201_CREATED
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        operation_description="Update an existing Party",
+        request_body=PartySerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the party to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
+    def put(self, request, *args, **kwargs):
+        try:
+            primary_key = request.query_params.get('pk')
+            if primary_key is None:
+                return Response(
+                    {"msg": "Primary key (pk) is required for updating"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            party = get_object_or_404(Party, pk=primary_key)
+            serializer = PartySerializer(party, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                result_set = {
+                    "msg": 'Updated Party',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        operation_description="Delete a party by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the party to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
+    def delete(self, request, *args, **kwargs):
+        try:
+            primary_key = request.query_params.get('pk')
+            if primary_key is None:
+                return Response(
+                    {"msg": "Primary key (pk) is required for deletion"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            party = get_object_or_404(Party, pk=primary_key)
+            party.delete()
+
+            result_set = {
+                "msg": 'Deleted Party',
+                "data": None,
+            }
+            return Response(result_set, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )

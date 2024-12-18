@@ -586,11 +586,149 @@ class ElectionDetailView(APIView):
 
                 result_set = {
                     "msg": 'Election Details list is empty' if len(
-                        election_details) == 0 is None else 'Returned Election Details list',
+                        election_details) == 0 else 'Returned Election Details list',
                     "data": election_details,
                 }
 
                 return Response(result_set, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ElectionSeatView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get all election seats or a single election seat by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the election seat",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
+    def get(self, request, *args, **kwargs):
+        try:
+            primary_key = request.query_params.get('pk')
+
+            if primary_key is None:  # List all Election Seats
+                election_seats = ElectionSeat.objects.all()
+                serializer = ElectionSeatSerializer(election_seats, many=True)
+                result_set = {
+                    "msg": 'Election Seat list is empty' if not serializer.data else 'Returned Election Seat list',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            else:  # Retrieve a specific Election Seat by primary key
+                election_seat = get_object_or_404(ElectionSeat, pk=primary_key)
+                serializer = ElectionSeatSerializer(election_seat)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        operation_description="Add a new Election Seat",
+        request_body=ElectionSeatSerializer,
+        responses={201: openapi.Response('')}
+    )
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            serializer = ElectionSeatSerializer(data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {"msg": "Election Seat Added Successfully"},
+                    status=status.HTTP_201_CREATED
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        operation_description="Update an existing Election Seat",
+        request_body=ElectionSeatSerializer,
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the election seat to update",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
+    def put(self, request, *args, **kwargs):
+        try:
+            primary_key = request.query_params.get('pk')
+            if primary_key is None:
+                return Response(
+                    {"msg": "Primary key (pk) is required for updating"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            election_seat = get_object_or_404(ElectionSeat, pk=primary_key)
+            serializer = ElectionSeatSerializer(election_seat, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                result_set = {
+                    "msg": 'Updated Election Seat',
+                    "data": serializer.data,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @swagger_auto_schema(
+        operation_description="Delete an Election Seat by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Primary key of the election seat to delete",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            )
+        ],
+        responses={200: openapi.Response('')}
+    )
+    def delete(self, request, *args, **kwargs):
+        try:
+            primary_key = request.query_params.get('pk')
+            if primary_key is None:
+                return Response(
+                    {"msg": "Primary key (pk) is required for deletion"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            election_seat = get_object_or_404(ElectionSeat, pk=primary_key)
+            election_seat.delete()
+
+            result_set = {
+                "msg": 'Deleted Election Seat',
+                "data": None,
+            }
+            return Response(result_set, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response(
