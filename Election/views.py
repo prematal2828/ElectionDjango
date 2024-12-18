@@ -541,64 +541,6 @@ class ElectionDataView(APIView):
             )
 
 
-class ElectionDetailView(APIView):
-    @swagger_auto_schema(
-        operation_description="Get all election details or a single election data by id",
-        manual_parameters=[
-            openapi.Parameter(
-                'pk',
-                openapi.IN_QUERY,
-                description="Optional primary key for the election details",
-                type=openapi.TYPE_INTEGER,
-                required=False
-            )
-        ],
-
-        responses={200: openapi.Response("")}
-    )
-    def get(self, request, *args, **kwargs):
-        try:
-
-            election_details = []
-            pk = request.query_params.get('pk')
-            if pk is None:  # List all election details
-                elections = ElectionInfo.objects.all()
-
-                for election in elections:
-                    total_votes_in_this_election = sum(
-                        election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
-                    election_details.append({**ElectionInfoSerializer(election).data,
-                                             "total_votes_in_this_election": total_votes_in_this_election})
-
-                result_set = {
-                    "msg": 'Election Details list is empty' if len(
-                        election_details) == 0 else 'Returned Election Details list',
-                    "data": election_details,
-                }
-                return Response(result_set, status=status.HTTP_200_OK)
-            else:  # Retrieve a specific election data by pk
-                election = get_object_or_404(ElectionInfo, pk=pk)
-                total_votes_in_this_election = sum(
-                    election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
-
-                election_details = [{**ElectionInfoSerializer(election).data,
-                                     "total_votes_in_this_election": total_votes_in_this_election}]
-
-                result_set = {
-                    "msg": 'Election Details list is empty' if len(
-                        election_details) == 0 else 'Returned Election Details list',
-                    "data": election_details,
-                }
-
-                return Response(result_set, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            return Response(
-                {"msg": str(e), "data": None},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-
 class ElectionSeatView(APIView):
     @swagger_auto_schema(
         operation_description="Get all election seats or a single election seat by id",
@@ -729,6 +671,65 @@ class ElectionSeatView(APIView):
                 "data": None,
             }
             return Response(result_set, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"msg": str(e), "data": None},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class ElectionDetailView(APIView):
+
+    @swagger_auto_schema(
+        operation_description="Get all election details or a single election data by id",
+        manual_parameters=[
+            openapi.Parameter(
+                'pk',
+                openapi.IN_QUERY,
+                description="Optional primary key for the election details",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            )
+        ],
+
+        responses={200: ElectionDetailsSerializer},
+    )
+    def get(self, request, *args, **kwargs):
+        try:
+
+            election_details = []
+            pk = request.query_params.get('pk')
+            if pk is None:  # List all election details
+                elections = ElectionInfo.objects.all()
+
+                for election in elections:
+                    total_votes_in_this_election = sum(
+                        election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
+                    election_details.append({**ElectionInfoSerializer(election).data,
+                                             "total_votes_in_this_election": total_votes_in_this_election})
+
+                result_set = {
+                    "msg": 'Election Details list is empty' if len(
+                        election_details) == 0 else 'Returned Election Details list',
+                    "data": election_details,
+                }
+                return Response(result_set, status=status.HTTP_200_OK)
+            else:  # Retrieve a specific election data by pk
+                election = get_object_or_404(ElectionInfo, pk=pk)
+                total_votes_in_this_election = sum(
+                    election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
+
+                election_details = [{**ElectionInfoSerializer(election).data,
+                                     "total_votes_in_this_election": total_votes_in_this_election}]
+
+                result_set = {
+                    "msg": 'Election Details list is empty' if len(
+                        election_details) == 0 else 'Returned Election Details list',
+                    "data": election_details,
+                }
+
+                return Response(result_set, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response(
