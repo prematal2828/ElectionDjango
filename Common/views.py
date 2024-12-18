@@ -291,11 +291,15 @@ class DistrictView(APIView):
                     "msg": 'District list is empty' if serializer.data is None else 'Returned District list',
                     "data": serializer.data,
                 }
+                print("Tamal")
                 return Response(result_set, status=status.HTTP_200_OK)
             else:
+                print("Tamal")
                 district = District.objects.get(pk=pk)
                 serializer = DistrictSerializer(district, many=False)
                 return Response(serializer.data, status=status.HTTP_200_OK)
+
+
         except Exception as e:
             return Response(
                 {"msg": str(e), "data": None},

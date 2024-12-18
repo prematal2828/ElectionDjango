@@ -5,29 +5,28 @@ from Election.models import *
 class ElectionTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ElectionType
-        fields = '__all__'
+        exclude = ['created_by', 'created_at', 'updated_by', 'updated_at', 'is_deleted', 'deleted_by', 'deleted_at']
 
 
 class ElectionCenterSerializer(serializers.ModelSerializer):
     class Meta:
         model = ElectionCenter
-        fields = '__all__'
+        exclude = ['created_by', 'created_at', 'updated_by', 'updated_at', 'is_deleted', 'deleted_by', 'deleted_at']
 
 
 class ElectionInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ElectionInfo
-        fields = '__all__'
+        exclude = ['created_by', 'created_at', 'updated_by', 'updated_at', 'is_deleted', 'deleted_by', 'deleted_at']
 
 
 class ElectionDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = ElectionData
-        fields = '__all__'
+        exclude = ['created_by', 'created_at', 'updated_by', 'updated_at', 'is_deleted', 'deleted_by', 'deleted_at']
 
 
 class ElectionDetailSerializer(serializers.Serializer):
-    election = ElectionInfoSerializer()
+    election = serializers.CharField()
     total_votes = serializers.IntegerField()
-
 

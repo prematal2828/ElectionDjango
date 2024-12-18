@@ -43,7 +43,7 @@ class UserLoginView(APIView):
                 user = authenticate(phone=phone, password=password)
 
                 if user is not None:
-                    login(request, user)
+                    # login(request, user)
                     refresh = MyTokenObtainPairSerializer.get_token(user)
 
                     return Response({
@@ -72,12 +72,12 @@ class UserLogoutView(APIView):
             auth_header = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')
             if len(auth_header) == 2:
                 access_token = auth_header[1]
-                if checkBlacklistedAccessTokens(request):
+                if not checkBlacklistedAccessTokens(request):
                     blacklist_access_token = BlacklistedAccessTokens(access_token=access_token)
                     blacklist_access_token.save()
 
             # Log out the user
-            logout(request)
+            #logout(request)
 
             return Response("User Logged Out", status=status.HTTP_200_OK)
         except Exception as e:

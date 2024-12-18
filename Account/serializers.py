@@ -25,12 +25,19 @@ class UserSignUpSerializer(serializers.ModelSerializer):
 
 
 class UserAccountSerializer(serializers.ModelSerializer):
-    user_type_details = UserTypeSerializer(required=False,read_only=True)
-
     class Meta:
         model = UserAccount
-        fields = '__all__'
+        exclude = ['last_login', 'is_staff', 'is_superuser', 'is_active', 'groups', 'user_permissions']
+        extra_kwargs = {
+            'password': {'write_only': True},  # Ensure password is write-only
+        }
 
+    def create(self, validated_data):
+        password = validated_data.pop('password')  # Extract the password
+        user = UserAccount(**validated_data)  # Create the user instance
+        user.set_password(password)  # Encrypt the password
+        user.save()  # Save the user instance
+        return user
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

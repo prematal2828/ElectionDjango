@@ -17,18 +17,21 @@ class JWTAuthenticationMiddleware:
 
         if current_path in excluded_paths:
             try:
+
                 return self.get_response(request)
             except Exception as e:
                 return e
 
         access_token = request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+
         jwt_auth = JWTAuthentication()
         try:
             jwt_auth.authenticate(request)
         except (InvalidToken, TokenError):
             return JsonResponse({"msg": "Unauthorized Access", "data": None}, status=401)
 
-        if checkBlacklistedAccessTokens(request) or not request.user.is_authenticated or access_token == '':
+        # if checkBlacklistedAccessTokens(request) or not request.user.is_authenticated or access_token == '':
+        if checkBlacklistedAccessTokens(request) or access_token == '':
             if access_token != '' and not BlacklistedAccessTokens.objects.filter(access_token=access_token).exists():
                 blacklist_access_token = BlacklistedAccessTokens(access_token=access_token)
                 blacklist_access_token.save()

@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 from .serializers import *
 from .models import *
 
+from types import SimpleNamespace
+
 
 class ElectionTypeView(APIView):
 
@@ -558,6 +560,7 @@ class ElectionDetailView(APIView):
     )
     def get(self, request, *args, **kwargs):
         try:
+
             election_details = []
             pk = request.query_params.get('pk')
             if pk is None:  # List all election details
@@ -566,7 +569,9 @@ class ElectionDetailView(APIView):
                 for election in elections:
                     total_votes_in_this_election = sum(
                         election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
-                    election_details.append(election, total_votes_in_this_election)
+                    election_details.append([election, total_votes_in_this_election])
+                    # election_details = SimpleNamespace(election=election,
+                    #                                    total_votes_in_this_election=total_votes_in_this_election)
 
                 serializer = ElectionDetailSerializer(election_details, many=True)
                 result_set = {
@@ -578,10 +583,17 @@ class ElectionDetailView(APIView):
                 election = get_object_or_404(ElectionInfo, pk=pk)
                 total_votes_in_this_election = sum(
                     election_data.vote_count for election_data in ElectionData.objects.filter(election=election))
-                election_details.append(election, total_votes_in_this_election)
 
-                serializer = ElectionDetailSerializer(election_details, many=True)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                election_details.append(
+                    [ElectionInfoSerializer(election), total_votes_in_this_election])
+
+                serializer = ElectionDetailSerializer(election_details.data[0][0], many=True)
+                result_set = {
+                    "msg": 'Election Details list is empty' if election_details is None else 'Returned Election Details list',
+                    "data": serializer,
+                }
+
+                return Response(result_set, status=status.HTTP_200_OK)
 
         except Exception as e:
             return Response(
