@@ -21,6 +21,8 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     user_type = models.ForeignKey(UserType, on_delete=models.SET_NULL, blank=True, null=True)
 
+    party = models.ForeignKey('Common.Party', on_delete=models.SET_NULL, blank=True, null=True)
+
     @property
     def user_type_details(self):
         return self.user_type
