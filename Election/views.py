@@ -158,7 +158,7 @@ class ElectionCenterView(APIView):
             pk = request.query_params.get('pk')
             if pk is None:  # List all election centers
                 election_center_list = ElectionCenter.objects.all()
-                serializer = ElectionCenterSerializer(election_center_list, many=True)
+                serializer = ElectionCenterSerializer(election_center_list, include_address=True, many=True)
                 result_set = {
                     "msg": 'Election Center list is empty' if serializer.data is None else 'Returned Election Center '
                                                                                            'list',
@@ -178,15 +178,30 @@ class ElectionCenterView(APIView):
 
     @swagger_auto_schema(
         operation_description="Add a new election center",
-        request_body=ElectionCenterSerializer,
+        request_body=ElectionCenterSerializer(include_address=True),
         responses={201: openapi.Response('')}
     )
     def post(self, request, *args, **kwargs):
         try:
             data = JSONParser().parse(request)
+
+            address = data.pop('address_details')
+            print(address)
+            print(data)
+
+            address_serializer = AddressSerializer(data=address)
+            if address_serializer.is_valid():
+                saved_address = address_serializer.save()
+
             serializer = ElectionCenterSerializer(data=data)
+            print(serializer)
             if serializer.is_valid():
-                serializer.save()
+                election_center = serializer.save()
+
+                if saved_address is not None:
+                    election_center.address = saved_address
+
+                election_center.save()
                 return Response({"msg": "ElectionCenter Added Successfully"}, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

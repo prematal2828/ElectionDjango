@@ -172,36 +172,35 @@ SWAGGER_SETTINGS = {
     'JSON_EDITOR': True,  # Optional: Enables an editable JSON input for body params
 }
 
-#CORS_ALLOW_ALL_ORIGINS = True  # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_ALL_ORIGINS = True  # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
 # CORS CONFIGURATION
 #CORS_ALLOW_ALL_ORIGINS = True  # Set to False to explicitly define allowed origins
-#CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 
 
 
-# MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',  # Vue frontend origin
-]
-
-CORS_ALLOW_METHODS = [
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    #'OPTIONS',
-]
-
-CORS_ALLOW_HEADERS = [
-    'x-requested-with',
-    'content-type',
-    'accept',
-    'origin',
-    'authorization',
-    'x-csrftoken',
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:5173',  # Vue frontend origin
+# ]
+#
+# CORS_ALLOW_METHODS = [
+#     'GET',
+#     'POST',
+#     'PUT',
+#     'PATCH',
+#     'DELETE',
+#     #'OPTIONS',
+# ]
+#
+# CORS_ALLOW_HEADERS = [
+#     'x-requested-with',
+#     'content-type',
+#     'accept',
+#     'origin',
+#     'authorization',
+#     'x-csrftoken',
+# ]
 
 # CORS_ALLOW_CREDENTIALS = True
 
