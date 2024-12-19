@@ -213,8 +213,6 @@ class Party(models.Model):
     party_symbol = models.TextField(max_length=200, null=True)
     party_symbol_image = models.ImageField(upload_to='Images/', null=True, blank=True)
 
-    party_members = models.ManyToManyField(UserAccount, related_name="party_info", blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True, blank=True,
                                    related_name='created_party')
